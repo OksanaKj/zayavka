@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Табличные части 1С (С подсказками)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #333;
+            background-color: #d8e8f0; /* Светло-голубой фон 1С */
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- Блоки и заголовки --- */
+        .section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            color: #006633; /* Темно-зеленый цвет заголовков 1С */
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        /* --- Панели инструментов --- */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+            background-color: transparent;
+        }
+
+        .btn {
+            padding: 2px 8px;
+            border: 1px solid #b0b0b0;
+            background: linear-gradient(to bottom, #fff, #e0e0e0);
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 11px;
+            color: #333;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .btn:hover { background: #f0f0f0; }
+        
+        .btn-icon {
+            padding: 2px 4px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            color: #444;
+            height: 18px;
+        }
+        .btn-icon:hover { border-color: #b0b0b0; background: #e0e0e0; }
+
+        .search-wrapper {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .search-input {
+            padding: 2px 4px;
+            border: 1px solid #a0a0a0;
+            border-radius: 2px;
+            font-size: 11px;
+            width: 150px;
+            height: 18px;
+        }
+
+        /* --- Таблицы --- */
+        .table-container {
+            background-color: #fff;
+            border: 1px solid #a0a0a0;
+            overflow-x: auto; /* Для горизонтальной прокрутки */
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #c0c0c0;
+            padding: 2px 4px;
+            text-align: left;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            height: 20px;
+            font-size: 11px;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #e6e6e6;
+            font-weight: normal;
+            color: #333;
+            border-bottom: 1px solid #a0a0a0;
+            text-align: left;
+            white-space: normal;
+        }
+
+        /* Иконка подсказки */
+        .help-icon {
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 3px;
+            user-select: none;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .help-icon:hover {
+            color: #003366;
+        }
+
+        /* Желтая подсветка активной строки */
+        tr.selected {
+            background-color: #fff2cc;
+        }
+        
+        /* Специфические элементы таблиц */
+        .col-num { width: 30px; text-align: center; }
+        .col-check { width: 30px; text-align: center; }
+        .col-price { text-align: right; }
+
+        input[type="checkbox"] {
+            margin: 0;
+            vertical-align: middle;
+        }
+        
+        /* Имитация горизонтального скроллбара */
+        .scroll-track {
+            height: 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-top: none;
+            position: relative;
+        }
+        .scroll-thumb {
+            height: 11px;
+            background-color: #c0c0c0;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 50%;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- БЛОК 1: СПЕЦИФИКАЦИЯ -->
+    <div class="section">
+        <div class="section-title">Спецификация</div>
+        
+        <div class="toolbar">
+            <button class="btn">Добавить</button>
+            <button class="btn-icon">⬆</button>
+            <button class="btn-icon">⬇</button>
+            <button class="btn">Копирование строк</button>
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="Поиск (Ctrl+F)">
+                <button class="btn-icon">🔍</button>
+                <button class="btn">Ещё ▼</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-num">N <span class="help-icon" title="Подсказка">?</span></th>
+                        <th class="col-check">Признак <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 120px;">Предмет <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Вид продукции <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 80px;">Честный знак <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 120px;">Желаемая дата заключения Договора <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 120px;">Желаемая дата исполнения Договора <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Проект <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Направление деятельности <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 100px;">Итоговая сумма <span class="help-icon" title="Подсказка">?</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="selected">
+                        <td class="col-num">1</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>Комп. оборудование</td>
+                        <td>[310.02] Компьютерное...</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>18.11.2026</td>
+                        <td>07.12.2026</td>
+                        <td>Воронцова Елена Викто...</td>
+                        <td>Амор. ОС/списание М...</td>
+                        <td class="col-price">400,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">2</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>оборудование</td>
+                        <td>[310.02] Компьютерное...</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>18.11.2026</td>
+                        <td>07.12.2026</td>
+                        <td>ФОТ Премирования</td>
+                        <td>Амор. ОС/списание М...</td>
+                        <td class="col-price">30,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="scroll-track"><div class="scroll-thumb"></div></div>
+    </div>
+
+    <!-- БЛОК 2: ТЕХНИЧЕСКОЕ ЗАДАНИЕ -->
+    <div class="section">
+        <div class="section-title">Техническое задание</div>
+        
+        <div class="toolbar">
+            <button class="btn">Добавить</button>
+            <button class="btn-icon">⬆</button>
+            <button class="btn-icon">⬇</button>
+            <button class="btn">Копирование строк тех. задания</button>
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="Поиск (Ctrl+F)">
+                <button class="btn-icon">🔍</button>
+                <button class="btn">Ещё ▼</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-num">N <span class="help-icon" title="Подсказка">?</span></th>
+                        <th class="col-check"></th>
+                        <th style="width: 120px;">Описание ТРУ <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 80px;">Количество <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 80px;">Стоимость <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 50px;">Ед. изм. <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 80px;">Сумма <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Подразделение <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 120px;">Инструкция по за... <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 100px;">Товар в наличии <span class="help-icon" title="Подсказка">?</span></th>
+                        <th>Комментарий <span class="help-icon" title="Подсказка">?</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="selected">
+                        <td class="col-num">1</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>Мониторы</td>
+                        <td>2</td>
+                        <td>200,00</td>
+                        <td>шт</td>
+                        <td>400,00</td>
+                        <td>Ликвидированные по...</td>
+                        <td>Значение характе...</td>
+                        <td class="col-check"><input type="checkbox" checked></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">2</td>
+                        <td class="col-check"><input type="checkbox"></td>
+                        <td>Клавиатуры</td>
+                        <td>2</td>
+                        <td>100,00</td>
+                        <td>шт</td>
+                        <td>200,00</td>
+                        <td>Ликвидированные по...</td>
+                        <td>Значение характе...</td>
+                        <td class="col-check"><input type="checkbox" checked></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="scroll-track"><div class="scroll-thumb" style="width: 80%;"></div></div>
+    </div>
+
+    <!-- БЛОК 3: ПФУ -->
+    <div class="section">
+        <div class="section-title">ПФУ</div>
+        
+        <div class="toolbar">
+            <button class="btn">Добавить</button>
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="Поиск (Ctrl+F)">
+                <button class="btn-icon">🔍</button>
+                <button class="btn">Ещё ▼</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-num">N <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Наименование ТРУ <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 80px;">Количество <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 60px;">Ед. изм. <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 100px;">Сумма <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Проект <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 150px;">Направление деятельности <span class="help-icon" title="Подсказка">?</span></th>
+                        <th style="width: 120px;">Статья оборотов <span class="help-icon" title="Подсказка">?</span></th>
+                        <th>КБК <span class="help-icon" title="Подсказка">?</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-num"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

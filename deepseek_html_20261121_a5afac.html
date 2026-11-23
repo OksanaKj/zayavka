@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточка документа 1С (Финальная версия с подсказками)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        /* Контейнер формы */
+        .card-container {
+            background-color: #e0f0f7;
+            border: 1px solid #a0bcc8;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Верхняя панель */
+        .top-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+        }
+        .top-header h1 {
+            font-size: 16px;
+            margin: 0 0 0 10px;
+            font-weight: normal;
+        }
+        .tabs {
+            display: flex;
+            padding: 0 15px;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            color: #555;
+        }
+        .tab.active {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: -1px;
+        }
+        .toolbar {
+            display: flex;
+            padding: 5px 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            gap: 5px;
+        }
+        .btn {
+            padding: 4px 12px;
+            border: 1px solid #b0b0b0;
+            background: linear-gradient(to bottom, #fff, #e0e0e0);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn.primary {
+            background: #ffcc00;
+            border: 1px solid #d4a800;
+            font-weight: bold;
+        }
+
+        /* Рабочая область */
+        .form-body {
+            padding: 15px 25px 25px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Смысловые блоки */
+        .section-block {
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid #b8d4e3;
+            border-radius: 4px;
+            padding: 12px 15px;
+        }
+        .green-header {
+            color: #008000;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        /* Сетки для полей */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 30px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr;
+            gap: 10px;
+        }
+        
+        /* Формы и поля */
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-row-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-row-inline > label {
+            width: 60px;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .input-group {
+            display: flex;
+            flex-grow: 1;
+            gap: 4px;
+        }
+        
+        label {
+            color: #555;
+            font-size: 12px;
+        }
+        input[type="text"], input[type="date"], textarea, select {
+            padding: 4px 6px;
+            border: 1px solid #a0a0a0;
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 13px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        textarea {
+            resize: vertical;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: 1px solid #5b9bd5;
+        }
+
+        /* Специфичные элементы 1С */
+        .field-highlight {
+            background-color: #cce8ff;
+            border: 1px solid #5b9bd5;
+        }
+        .btn-select {
+            padding: 0 6px;
+            border: 1px solid #a0a0a0;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-size: 11px;
+            color: #333;
+            height: 25px;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* Иконка подсказки */
+        .help-icon {
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 4px;
+            user-select: none;
+        }
+        .help-icon:hover {
+            color: #003366;
+        }
+        
+        /* Обертка для поля и иконки */
+        .input-with-help {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Нижняя часть */
+        .bottom-split-section {
+            display: flex;
+            margin-top: 5px;
+            gap: 20px;
+        }
+        .bottom-left, .bottom-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bottom-left .green-header {
+            margin-bottom: 5px;
+        }
+        
+        .comment-row {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .comment-row label {
+            margin-bottom: 3px;
+        }
+        
+        .storage-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+        .storage-row label {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card-container">
+    <!-- Шапка и вкладки -->
+    <div class="top-header">
+        <button class="btn">←</button>
+        <button class="btn">→</button>
+        <h1>📄 Документ (создание) *</h1>
+    </div>
+    <div class="tabs">
+        <div class="tab active">Реквизиты</div>
+        <div class="tab">Файлы (3)</div>
+        <div class="tab">Закупки</div>
+        <div class="tab">Обработка (10)</div>
+        <div class="tab">Свойства</div>
+    </div>
+    <div class="toolbar">
+        <button class="btn primary">Записать и закрыть</button>
+        <button class="btn">Записать</button>
+        <button class="btn">Отправить...</button>
+        <button class="btn">Печать ▼</button>
+    </div>
+
+    <!-- Основная рабочая область -->
+    <div class="form-body">
+
+        <!-- БЛОК 1: Сведения о документе -->
+        <div class="section-block">
+            <div class="green-header">1. Основные сведения о документе</div>
+            <div class="grid-2">
+                <div class="form-row">
+                    <label>Вид документа:</label>
+                    <div class="input-with-help">
+                        <select class="field-highlight" style="flex-grow: 1;">
+                            <option>Заявка на закупку (РИММУ)</option>
+                        </select>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Рег. №:</label>
+                    <div class="input-with-help">
+                        <input type="text" placeholder="Номер" style="flex-grow: 1;">
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 10px;">
+                <div class="form-row">
+                    <label>Наименование договора:</label>
+                    <div class="input-with-help">
+                        <input type="text" value="Поставка компл. оборудования в 2026 г." style="flex-grow: 1;">
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Дата:</label>
+                    <div class="input-with-help">
+                        <input type="date" style="flex-grow: 1;">
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkbox-group" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(184, 212, 227, 0.5);">
+                <label><input type="checkbox"> Все позиции заявки выданы со склада <span class="help-icon" title="Подсказка">?</span></label>
+                <label><input type="checkbox"> Заявка включена в сводную заявку на закупку <span class="help-icon" title="Подсказка">?</span></label>
+            </div>
+        </div>
+
+        <!-- БЛОК 2: Параметры закупки -->
+        <div class="section-block">
+            <div class="green-header">2. Параметры закупки</div>
+            <div class="grid-2">
+                <div class="form-row">
+                    <label>Объект закупки:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text" value="Закупка товаров">
+                            <button class="btn-select">...</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Способ закупки:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text" class="field-highlight" value="Единственный поставщик">
+                            <button class="btn-select">...</button>
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row" style="margin-top: 10px;">
+                <label>Цель закупки:</label>
+                <div class="input-with-help">
+                    <textarea style="flex-grow: 1;">Необходимость приобретения техники</textarea>
+                    <span class="help-icon" title="Подсказка">?</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- БЛОК 3: Финансы и ответственные -->
+        <div class="section-block">
+            <div class="green-header">3. Финансы и ответственные лица</div>
+            <div class="grid-3">
+                <div class="form-row">
+                    <label>Подразделение:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text" value="Ликвидированные подразделения">
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Сумма:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text" value="0,00">
+                            <select style="width: 70px;"><option>RUB</option></select>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Подготовил:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text" value="Абашеева А.Д.">
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 10px;">
+                <div class="form-row">
+                    <label>ФИО МОЛ:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text">
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Контакты МОЛ:</label>
+                    <div class="input-with-help">
+                        <input type="text" style="flex-grow: 1;">
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 10px;">
+                <div class="form-row">
+                    <label>Ответственный:</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text">
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- НИЖНЯЯ ЧАСТЬ -->
+        <div class="bottom-split-section">
+            
+            <!-- ЛЕВАЯ КОЛОНКА -->
+            <div class="bottom-left">
+                <div class="green-header" style="margin-top: 0;">Наше учреждение</div>
+                
+                <div class="form-row-inline" style="margin-bottom: 5px;">
+                    <label>Подписант</label>
+                    <div class="input-with-help">
+                        <div class="input-group">
+                            <input type="text">
+                            <button class="btn-select">...</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                
+                <div class="comment-row">
+                    <label>Комментарий:</label>
+                    <div class="input-with-help">
+                        <textarea style="height: 60px; flex-grow: 1;"></textarea>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ КОЛОНКА -->
+            <div class="bottom-right">
+                <div class="green-header" style="margin-top: 0;">Хранение</div>
+                
+                <div class="storage-row">
+                    <label>Форма:</label>
+                    <div class="input-with-help" style="flex-grow: 1;">
+                        <select style="flex-grow: 1;">
+                            <option>Электронная</option>
+                        </select>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                
+                <div class="storage-row">
+                    <label>В дело:</label>
+                    <div class="input-with-help" style="flex-grow: 1;">
+                        <div class="input-group">
+                            <input type="text">
+                            <button class="btn-select">...</button>
+                            <button class="btn-select">▼</button>
+                        </div>
+                        <span class="help-icon" title="Подсказка">?</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <button class="btn">Добавить...</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

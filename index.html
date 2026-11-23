@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хаб документов 1С</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent-color: #0066cc;
+            --accent-hover: #004c99;
+            --border-color: #d1d9e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #a0bcc8;
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: var(--accent-color);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card:hover .card-footer {
+            color: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📂 Навигация по формам 1С</h1>
+        <p class="subtitle">Выберите необходимый раздел для просмотра интерфейса</p>
+    </header>
+
+    <div class="grid">
+        
+        <!-- Ссылка на первый файл -->
+        <a href="deepseek_html_20261121_a5afac.html" class="card">
+            <div class="card-icon">📄</div>
+            <h2>Карточка документа (Реквизиты)</h2>
+            <p>Основные сведения, параметры закупки, финансы, ответственные лица и служебные отметки.</p>
+            <div class="card-footer">Открыть форму →</div>
+        </a>
+
+        <!-- Ссылка на второй файл -->
+        <a href="deepseek_html_20261121_52c540.html" class="card">
+            <div class="card-icon">⚙️</div>
+            <h2>Условия закупки</h2>
+            <p>Инициация, метод НМЦК, поставщик, условия оплаты, график и условия поставки/приемки.</p>
+            <div class="card-footer">Открыть форму →</div>
+        </a>
+
+        <!-- Ссылка на третий файл -->
+        <a href="deepseek_html_20261121_1c4819.html" class="card">
+            <div class="card-icon">📊</div>
+            <h2>Табличные части</h2>
+            <p>Спецификация закупки, техническое задание (ТЗ) и ПФУ в виде интерактивных таблиц с подсказками.</p>
+            <div class="card-footer">Открыть форму →</div>
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>
